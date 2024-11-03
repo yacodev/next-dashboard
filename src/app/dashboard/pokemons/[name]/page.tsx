@@ -1,15 +1,23 @@
-import { Pokemon } from '@/pokemons';
+import { Pokemon, PokemonsResponse } from '@/pokemons';
 import { Metadata } from 'next';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 
 interface PokemonPageProps {
-  params: Promise<{ id: string }>;
+  params: Promise<{ name: string }>;
 }
 
 export async function generateStaticParams() {
-  const statci151Pokemons = Array.from({ length: 151 }, (_, i) => i + 1);
-  return statci151Pokemons.map((id) => ({ id: id.toString() }));
+  const pokemonResponse: PokemonsResponse = await fetch(
+    `https://pokeapi.co/api/v2/pokemon?limit=151`
+  ).then((res) => res.json());
+
+  const static151Pokemons = pokemonResponse.results.map((pokemon) => ({
+    name: pokemon.name,
+  }));
+  console.log('static151Pokemons', static151Pokemons);
+
+  return static151Pokemons;
 }
 
 export async function generateMetadata({
@@ -17,7 +25,7 @@ export async function generateMetadata({
 }: PokemonPageProps): Promise<Metadata> {
   const resolvedParams = await params;
   try {
-    const { id, name } = await getPokemon(resolvedParams.id);
+    const { id, name } = await getPokemon(resolvedParams.name);
 
     return {
       title: `#${id} - ${name}`,
@@ -32,9 +40,9 @@ export async function generateMetadata({
   }
 }
 
-const getPokemon = async (id: string): Promise<Pokemon> => {
+const getPokemon = async (name: string): Promise<Pokemon> => {
   try {
-    const pokemon = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`, {
+    const pokemon = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`, {
       cache: 'force-cache', // TODO: cambiar esto en un futuro
       // next: {
       //   revalidate: 60 * 60 * 30 * 6
@@ -51,7 +59,7 @@ const getPokemon = async (id: string): Promise<Pokemon> => {
 
 export default async function PokemonPage({ params }: PokemonPageProps) {
   const resolvedParams = await params;
-  const pokemon = await getPokemon(resolvedParams.id);
+  const pokemon = await getPokemon(resolvedParams.name);
 
   return (
     <div className='flex mt-5 flex-col items-center text-slate-800'>
