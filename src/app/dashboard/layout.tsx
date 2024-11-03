@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sidebar } from '../components';
+import { Sidebar } from '@/components';
 
 function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
