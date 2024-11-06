@@ -1,5 +1,5 @@
 import React from 'react';
-import { PokemonGrid } from '@/pokemons';
+import { FavoritePokemons } from '@/pokemons';
 
 export const metadata = {
   title: '151 favorites',
@@ -14,7 +14,7 @@ export default async function PokemonPage() {
       <span className='text-5xl my-2'>
         favorites Pokemons <small>local-state</small>
       </span>
-      <PokemonGrid pokemons={[]} />
+      <FavoritePokemons />
     </div>
   );
 }
